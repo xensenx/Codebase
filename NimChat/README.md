@@ -1,4 +1,4 @@
-# NIM Chat — NVIDIA NIM on Cloudflare Pages
+# NIM Chat — LocoMotive lagacy software
 
 A mobile-first, dark-themed chat UI backed by NVIDIA NIM, hosted entirely on Cloudflare Pages with API key protection via Pages Functions.
 
