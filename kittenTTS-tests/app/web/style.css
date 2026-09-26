@@ -1,0 +1,393 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #e9e9ed;
+  background: #0b0b0e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #17171d 0, #0b0b0e 45%);
+}
+
+.shell {
+  width: min(1050px, calc(100% - 40px));
+  margin: 48px auto;
+}
+
+header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: .18em;
+  opacity: .55;
+}
+
+h1 {
+  margin: 0;
+  font-size: 42px;
+  letter-spacing: -.04em;
+}
+
+.sub {
+  margin: 8px 0 0;
+  color: #9b9ba5;
+}
+
+.local {
+  padding: 9px 13px;
+  border: 1px solid #303039;
+  border-radius: 999px;
+  color: #a9d6ad;
+  font-size: 12px;
+  letter-spacing: .08em;
+}
+
+.card {
+  background: #111116;
+  border: 1px solid #292930;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.input-card { margin-bottom: 16px; }
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #b8b8c2;
+}
+
+.row-between, .result-head, .path-row, .actions, .meta {
+  display: flex;
+  align-items: center;
+}
+
+.row-between, .result-head {
+  justify-content: space-between;
+}
+
+textarea, input, select {
+  width: 100%;
+  border: 1px solid #303039;
+  border-radius: 10px;
+  background: #0b0b0f;
+  color: #eee;
+  padding: 12px;
+  font: inherit;
+  outline: none;
+}
+
+textarea {
+  min-height: 290px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+textarea:focus, input:focus, select:focus {
+  border-color: #666673;
+}
+
+.meta {
+  justify-content: space-between;
+  margin-top: 9px;
+  color: #777783;
+  font-size: 12px;
+}
+
+.dropzone {
+  border: 1px dashed #3a3a45;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #8f8f9b;
+}
+
+.dropzone small {
+  display: block;
+  margin-top: 4px;
+  opacity: .7;
+}
+
+.dropzone.dragging {
+  border-color: #8d8d9a;
+  background: #18181e;
+}
+
+.file-button {
+  display: inline-block;
+  padding: 8px 11px;
+  border: 1px solid #303039;
+  border-radius: 9px;
+  cursor: pointer;
+  margin: 0;
+  color: #ddd;
+}
+
+.file-button input { display: none; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.hint {
+  color: #777783;
+  font-size: 12px;
+}
+
+.check {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+
+.check input {
+  width: auto;
+}
+
+.path-row {
+  gap: 8px;
+}
+
+.path-row input { flex: 1; }
+
+button {
+  border: 0;
+  border-radius: 11px;
+  padding: 13px 20px;
+  background: #eeeef2;
+  color: #101014;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: #24242b;
+  color: #e8e8ed;
+  border: 1px solid #35353e;
+  white-space: nowrap;
+  padding: 10px 13px;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+
+.actions {
+  gap: 18px;
+  margin: 18px 0;
+}
+
+#status { color: #9696a2; }
+
+.result audio {
+  display: block;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.result p {
+  color: #aaaab5;
+  word-break: break-all;
+  margin-bottom: 0;
+}
+
+.result-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.hidden { display: none; }
+
+@media (max-width: 720px) {
+  .grid { grid-template-columns: 1fr; }
+  header { flex-direction: column; gap: 16px; }
+  .result-head { align-items: flex-start; gap: 12px; flex-direction: column; }
+}
+
+
+.progress-card {
+  margin-bottom: 18px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 12px;
+  margin-top: 18px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #24242b;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: #e8e8ed;
+  transition: width .5s ease;
+}
+
+.progress-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.progress-stats div {
+  padding: 12px;
+  border: 1px solid #292930;
+  border-radius: 10px;
+  background: #0d0d11;
+}
+
+.progress-stats span {
+  display: block;
+  color: #777783;
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.progress-stats strong {
+  font-size: 14px;
+}
+
+.progress-detail {
+  margin-top: 16px;
+  color: #9999a4;
+  font-size: 13px;
+}
+
+.spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid #393941;
+  border-top-color: #eeeeF2;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+.chunk-options {
+  margin-top: 12px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 720px) {
+  .progress-stats { grid-template-columns: 1fr 1fr; }
+}
+
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 10px 0;
+}
+
+.setting-row + .setting-row {
+  border-top: 1px solid #24242b;
+}
+
+.toggle {
+  position: relative;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #303038;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+
+.toggle span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f1f1f4;
+  transition: transform .2s ease;
+}
+
+.toggle.on {
+  background: #77777f;
+}
+
+.toggle.on span {
+  transform: translateX(20px);
+}
+
+.progress-track {
+  position: relative;
+}
+
+.progress-track::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 18%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.22),
+    transparent
+  );
+  animation: progress-shimmer 1.2s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes progress-shimmer {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(650%); }
+}
+
+.progress-card .spinner {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 900px) {
+  .progress-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .progress-stats { grid-template-columns: 1fr; }
+}
+
+.progress-track.indeterminate {
+  overflow: hidden;
+}
+.progress-track.indeterminate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 34%;
+  border-radius: inherit;
+  background: rgba(255,255,255,.38);
+  animation: indeterminate-progress 1.1s ease-in-out infinite;
+  z-index: 1;
+}
+@keyframes indeterminate-progress {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(390%); }
+}

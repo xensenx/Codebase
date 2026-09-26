@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KittenTTS — Local Studio</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main class="shell">
+  <header>
+    <div>
+      <p class="eyebrow">LOCAL AUDIO STUDIO</p>
+      <h1>KittenTTS</h1>
+      <p class="sub">Text to speech, entirely on this machine.</p>
+    </div>
+    <div class="local">● LOCAL</div>
+  </header>
+
+  <section class="card input-card">
+    <div class="row-between">
+      <label for="text">Text</label>
+      <label class="file-button">
+        Add document
+        <input id="document" type="file" accept=".pdf,.epub,.txt,.md">
+      </label>
+    </div>
+    <div id="dropzone" class="dropzone">
+      <span>Drop PDF, EPUB, TXT or MD here</span>
+      <small>or use “Add document”</small>
+    </div>
+    <textarea id="text" placeholder="Paste or type text here..."></textarea>
+    <div class="meta">
+      <span id="source">No document loaded</span>
+      <span id="chars">0 characters</span>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <label for="model">Model</label>
+      <select id="model"></select>
+      <p class="hint">Models are loaded from your local KittenTTS folders.</p>
+    </div>
+
+    <div class="card">
+      <label for="voice">Voice</label>
+      <select id="voice"></select>
+    </div>
+
+    <div class="card">
+      <label for="speed">Speed <span id="speedValue">1.00×</span></label>
+      <input id="speed" type="range" min="0.5" max="2" step="0.05" value="1">
+    </div>
+
+    <div class="card">
+      <label>Text processing</label>
+
+      <div class="setting-row">
+        <div>
+          <strong>Normalize text</strong>
+          <p class="hint">Expand numbers, currencies, units, etc.</p>
+        </div>
+        <button id="cleanTextToggle" class="toggle on" type="button" aria-pressed="true">
+          <span></span>
+        </button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <strong>Intermediate chunking</strong>
+          <p class="hint">Create recoverable intermediate audio chunks.</p>
+        </div>
+        <button id="chunkToggle" class="toggle" type="button" aria-pressed="false">
+          <span></span>
+        </button>
+      </div>
+
+      <div id="chunkOptions" class="chunk-options hidden">
+        <label for="chunkMinutes">Chunk interval</label>
+        <select id="chunkMinutes">
+          <option value="1">1 minute</option>
+          <option value="5">5 minutes</option>
+          <option value="10" selected>10 minutes</option>
+          <option value="15">15 minutes</option>
+          <option value="30">30 minutes</option>
+          <option value="60">1 hour</option>
+        </select>
+        <p class="hint">Intervals are approximate; boundaries move toward nearby sentence or paragraph breaks.</p>
+      </div>
+    </div>
+
+    <div class="card output-card">
+      <label for="audioName">Audio filename</label>
+      <input id="audioName" type="text" placeholder="My Audiobook.wav">
+      <p class="hint">The generation folder is timestamped automatically.</p>
+      <label for="output">Output folder</label>
+      <div class="path-row">
+        <input id="output" type="text" placeholder="Default: KittenTTS\outputs">
+        <button id="browse" class="secondary">Browse</button>
+      </div>
+      <p class="hint">A unique job folder is created automatically.</p>
+    </div>
+  </section>
+
+  <section class="actions">
+    <button id="generate">Generate audio</button>
+    <div id="status">Ready.</div>
+  </section>
+
+  <section id="progressCard" class="card progress-card hidden">
+    <div class="result-head">
+      <strong id="progressTitle">Generating audio</strong>
+      <span id="progressSpinner" class="spinner"></span>
+    </div>
+    <div class="progress-track">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+    <div class="progress-stats">
+      <div><span>Progress</span><strong id="progressPercent">0%</strong></div>
+      <div><span>Chunk</span><strong id="progressChunk">1 / 1</strong></div>
+      <div><span>Segments</span><strong id="progressSegments">0 / 0</strong></div>
+      <div><span>Audio generated</span><strong id="progressAudio">00:00</strong></div>
+      <div><span>Elapsed</span><strong id="progressElapsed">00:00</strong></div>
+      <div><span>ETA</span><strong id="progressEta">Calculating…</strong></div>
+      <div><span>Generation rate</span><strong id="progressRate">—</strong></div>
+    </div>
+    <div class="progress-detail" id="progressDetail">Preparing…</div>
+  </section>
+
+  <section id="result" class="card result hidden">
+    <div class="result-head">
+      <strong>Generation complete</strong>
+      <div class="result-actions">
+        <button id="openFolder" class="secondary">Open in File Explorer</button>
+        <button id="newGeneration" class="secondary">Generate New</button>
+      </div>
+    </div>
+    <audio id="player" controls preload="metadata"></audio>
+    <p id="resultPath"></p>
+  </section>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
