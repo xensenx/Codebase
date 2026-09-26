@@ -46,3 +46,13 @@ There are four model variants, with eight voices available for each model, for a
 
 All four models and their corresponding voice files are required if the complete set of models and voices is to be available through the interface.
 
+
+## WebUI Screenshots
+
+### Main Interface
+
+![KittenTTS WebUI](assets/Screenshot%202026-09-26%20155205.png)
+
+### Generation Progress
+
+![KittenTTS Generation Progress](assets/Screenshot%202026-09-26%20155149.png)
