@@ -1,0 +1,14 @@
+{
+  "model": "mini",
+  "voice": "Luna",
+  "speed": 1.0,
+  "clean_text": true,
+  "text_length": 149,
+  "created": "2026-09-26T15:49:42.348784",
+  "audio": "D:\\tts-test-outputs\\KittenTTS_2026-09-26_154936_75f8d9\\80m-luna.wav",
+  "chunking": false,
+  "chunk_minutes": null,
+  "chunks": 1,
+  "segments": 2,
+  "duration_seconds": 11.208333333333334
+}

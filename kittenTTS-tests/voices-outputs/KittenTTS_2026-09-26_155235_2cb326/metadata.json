@@ -1,0 +1,14 @@
+{
+  "model": "mini",
+  "voice": "Leo",
+  "speed": 1.0,
+  "clean_text": true,
+  "text_length": 147,
+  "created": "2026-09-26T15:52:41.905195",
+  "audio": "D:\\tts-test-outputs\\KittenTTS_2026-09-26_155235_2cb326\\80m-leo.wav",
+  "chunking": false,
+  "chunk_minutes": null,
+  "chunks": 1,
+  "segments": 2,
+  "duration_seconds": 12.408333333333333
+}

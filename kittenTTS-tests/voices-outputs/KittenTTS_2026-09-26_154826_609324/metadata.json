@@ -1,0 +1,14 @@
+{
+  "model": "mini",
+  "voice": "Jasper",
+  "speed": 1.0,
+  "clean_text": true,
+  "text_length": 151,
+  "created": "2026-09-26T15:48:31.510688",
+  "audio": "D:\\tts-test-outputs\\KittenTTS_2026-09-26_154826_609324\\80m-jasper.wav",
+  "chunking": false,
+  "chunk_minutes": null,
+  "chunks": 1,
+  "segments": 2,
+  "duration_seconds": 10.533333333333333
+}

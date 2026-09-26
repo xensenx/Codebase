@@ -1,0 +1,14 @@
+{
+  "model": "mini",
+  "voice": "Hugo",
+  "speed": 1.0,
+  "clean_text": true,
+  "text_length": 149,
+  "created": "2026-09-26T15:51:11.733804",
+  "audio": "D:\\tts-test-outputs\\KittenTTS_2026-09-26_155106_427888\\80m-hugo.wav",
+  "chunking": false,
+  "chunk_minutes": null,
+  "chunks": 1,
+  "segments": 2,
+  "duration_seconds": 10.008333333333333
+}

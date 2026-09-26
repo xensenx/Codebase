@@ -1,0 +1,14 @@
+{
+  "model": "mini",
+  "voice": "Bruno",
+  "speed": 1.0,
+  "clean_text": true,
+  "text_length": 150,
+  "created": "2026-09-26T15:50:20.429313",
+  "audio": "D:\\tts-test-outputs\\KittenTTS_2026-09-26_155015_4d83df\\80m-bruno.wav",
+  "chunking": false,
+  "chunk_minutes": null,
+  "chunks": 1,
+  "segments": 2,
+  "duration_seconds": 10.233333333333333
+}
