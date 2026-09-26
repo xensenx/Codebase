@@ -51,8 +51,8 @@ All four models and their corresponding voice files are required if the complete
 
 ### Main Interface
 
-![KittenTTS WebUI](assets/Screenshot%202026-09-26%20155205.png)
+![KittenTTS WebUI](assets/Screenshot%202026-09-26%20155149.png)
 
 ### Generation Progress
 
-![KittenTTS Generation Progress](assets/Screenshot%202026-09-26%20155149.png)
+![KittenTTS Generation Progress](assets/Screenshot%202026-09-26%20155205.png)
