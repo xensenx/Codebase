@@ -1,11 +1,15 @@
-This repository contains various miscellaneous self-contained snippets of codes and other files for countless everyday tasks. To me, this is just a way to back up my code, but it may prove to be a treasure trove for someone exploring...
+This repository contains various miscellaneous self-contained snippets of code and other files for countless everyday tasks. It also includes archived projects and repositories that are no longer actively maintained but are kept here for preservation, reference, or simply because I don't want to lose them. Among those, you may also find WebTools that still remain useful. Some of these tools are hosted inside the ./docs directory of this repository.
 
-I've not documented what each file does, so it's up to you to figure it out and use it. Part of the fun, I guess (that also, I don't have the time and am too lazy to document everything in this ever-growing archive).
+To me, this is just a way to back up my code, but it may prove to be a treasure trove for someone exploring...
 
-This repository also contains archived projects and repositories that are no longer actively maintained but are kept here for preservation, reference, or simply because I don't want to lose them.
+I've not documented what each file does, so it's up to you to figure it out and use it. Part of the fun, I guess. (That, and partly because it's difficult to track and maintain every single element in this ever-growing archive.)
 
-No need to worry about license *everything here is 100% free for both  personal and commercial use. 
+If you find something useful in this archive that helped you, consider sharing this repository with your friends so more people can benefit from it.
 
-*(the fonts here are not mine, unless documented so. but all of them are free for personal use, but some may restrict commercial use, so read their documentation before using them first.)
+License?
+
+All of the files here are 100% free for personal use. As for commercial use, some files such as certain fonts, wallpapers, and files which are not created by me may not be free for commercial use. So just check first before using them. I usually highlight those files in the README of the relevant directory.
+
+If you have any questions related to any files, you can contact me through the email listed on my profile.
 
 Have fun exploring ^_~
