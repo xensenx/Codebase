@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndexTier - Tier List Maker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Landing Page -->
+    <div id="landing-page" class="landing-page">
+        <div class="landing-content">
+            <h1 class="landing-title">IndexTier</h1>
+            <p class="landing-subtitle">Create and organize your tier lists</p>
+            
+            <div class="landing-description">
+                <p>A simple, intuitive tool for ranking and organizing anything. Upload images, drag items between tiers, and customize your rankings exactly how you want them.</p>
+                <p>Your data is saved locally in your browser, so you can pick up right where you left off.</p>
+            </div>
+            
+            <button class="landing-button" onclick="ui.enterApp()">
+                <span>Start Ranking</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app-container" class="app-container" style="display: none;">
+        <header>
+            <h1>IndexTier</h1>
+            <div class="controls">
+                <button class="danger" onclick="actions.resetBoard()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                    </svg>
+                    Reset
+                </button>
+                <button onclick="actions.exportJSON()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Save
+                </button>
+                <button onclick="document.getElementById('file-input').click()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Load
+                </button>
+                <input type="file" id="file-input" accept=".json" style="display: none" onchange="actions.importJSON(this)">
+            </div>
+        </header>
+
+        <main>
+            <div id="tier-board"></div>
+
+            <!-- Add Tier Section -->
+            <div id="add-tier-section" class="add-tier-section">
+                <button class="add-tier-button" onclick="actions.addTier()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    <span>Add Tier</span>
+                </button>
+            </div>
+
+            <!-- Item Pool Section -->
+            <div id="item-section">
+                <div class="section-header">
+                    <h2>Item Pool</h2>
+                    <div class="pool-controls">
+                        <button onclick="ui.openModal('modal-add-item')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                            </svg>
+                            Add via URL
+                        </button>
+                        <button onclick="ui.openModal('modal-upload-images')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            Upload Images
+                        </button>
+                        <button class="danger" onclick="actions.clearPool()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                            Clear Pool
+                        </button>
+                    </div>
+                </div>
+                <div id="item-pool" class="drop-zone" data-id="pool"></div>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <span class="footer-title">IndexTier</span>
+            <span class="footer-divider">·</span>
+            <span class="footer-copyright">© 2026</span>
+        </div>
+    </footer>
+
+    <!-- Add Item Modal -->
+    <div id="modal-add-item" class="modal-overlay">
+        <div class="modal">
+            <h2>Add via URL</h2>
+            <div class="form-group">
+                <label>Image URL (Optional)</label>
+                <input type="text" id="input-img-url" placeholder="https://example.com/image.png">
+            </div>
+            <div class="form-group">
+                <label>Label Text</label>
+                <input type="text" id="input-item-text" placeholder="Character Name / Game Title">
+            </div>
+            <div class="form-actions">
+                <button onclick="ui.closeModal('modal-add-item')">Cancel</button>
+                <button class="primary" onclick="actions.createItem()">Add Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Images Modal -->
+    <div id="modal-upload-images" class="modal-overlay">
+        <div class="modal">
+            <h2>Upload Images</h2>
+            <div class="form-group">
+                <label>Select Images</label>
+                <input type="file" id="image-file-input" accept="image/*" multiple>
+                <div class="upload-hint">You can select multiple images at once</div>
+            </div>
+            <div class="form-actions">
+                <button onclick="ui.closeModal('modal-upload-images')">Cancel</button>
+                <button class="primary" onclick="actions.uploadImages()">Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Tier Modal -->
+    <div id="modal-edit-tier" class="modal-overlay">
+        <div class="modal">
+            <h2>Edit Tier</h2>
+            <input type="hidden" id="edit-tier-id">
+            <div class="form-group">
+                <label>Tier Name</label>
+                <input type="text" id="edit-tier-name">
+            </div>
+            <div class="form-group">
+                <label>Tier Color</label>
+                <input type="color" id="edit-tier-color" style="height: 50px; cursor: pointer;">
+            </div>
+            <div class="form-group">
+                <button class="danger-outline" onclick="actions.clearTier()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                    Clear Tier Items
+                </button>
+            </div>
+            <div class="form-actions">
+                <button onclick="ui.closeModal('modal-edit-tier')">Cancel</button>
+                <button class="primary" onclick="actions.saveTierEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loading-text">Processing images...</div>
+        <div id="loading-progress"></div>
+    </div>
+
+    <script defer src="script.js"></script>
+</body>
+</html>
