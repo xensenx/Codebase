@@ -17,24 +17,24 @@ py -3.12 -m venv .venv
 
 Install the required dependencies:
 
+```powershell
 python -m pip install -r requirements.txt
+```
 
-The web interface can then be started through the included local server.
-
+The web interface can then be started through the included local server. 
 WebUI Dependencies
-
 The interface depends on the following Python packages:
 
-Flask
-KittenTTS
-NumPy
-SoundFile
-ONNX Runtime
-spaCy
-Misaki
-Num2Words
-espeakng-loader
-Hugging Face Hub
+- Flask
+- KittenTTS
+- NumPy
+- SoundFile
+- ONNX Runtime
+- spaCy
+- Misaki
+- Num2Words
+- espeakng-loader
+- Hugging Face Hub
 
 KittenTTS also provides the underlying ONNX-based TTS models and voice data.
 
