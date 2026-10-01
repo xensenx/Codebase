@@ -38,14 +38,10 @@ The interface depends on the following Python packages:
 
 KittenTTS also provides the underlying ONNX-based TTS models and voice data.
 
-Models and Voices
+### Models and Voices
 
-The interface supports the KittenTTS model variants included with this project.
-
-There are four model variants, with eight voices available for each model, for a total of 32 voice/model combinations.
-
+The interface supports the KittenTTS model variants included with this project. There are four model variants, with eight voices available for each model, for a total of 32 voice/model combinations.
 All four models and their corresponding voice files are required if the complete set of models and voices is to be available through the interface.
-
 
 ## WebUI Screenshots
 
