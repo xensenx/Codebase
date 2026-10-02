@@ -14,6 +14,7 @@
 
 
 ````
+
 # Minimal Text Editor - Desktop Application
 
 A lightweight, fast-loading desktop text editor built with Neutralino.js for Windows.
