@@ -1,0 +1,24 @@
+{
+  "name": "minimal-text-editor",
+  "version": "1.0.0",
+  "description": "A lightweight, fast desktop text editor built with Neutralino.js",
+  "main": "resources/index.html",
+  "scripts": {
+    "update": "neu update",
+    "dev": "neu run",
+    "build": "neu build",
+    "start": "neu run"
+  },
+  "keywords": [
+    "text-editor",
+    "neutralino",
+    "desktop-app",
+    "lightweight",
+    "minimal"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@neutralinojs/neu": "latest"
+  }
+}

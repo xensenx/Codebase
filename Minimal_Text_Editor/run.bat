@@ -1,0 +1,3 @@
+@echo off
+echo Starting Minimal Text Editor...
+neu run

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Text Editor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Slim Top Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <!-- New Document -->
+            <button id="newBtn" class="icon-btn" title="New Document (Ctrl+N)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+            </button>
+            
+            <!-- Open File -->
+            <button id="openBtn" class="icon-btn" title="Open File (Ctrl+O)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"></path>
+                </svg>
+            </button>
+            
+            <!-- Save File -->
+            <button id="saveBtn" class="icon-btn" title="Save File (Ctrl+S)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="toolbar-right">
+            <!-- New Window -->
+            <button id="newWindowBtn" class="icon-btn" title="Open in New Window">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+            </button>
+            
+            <!-- Maximize Toggle -->
+            <button id="maximizeBtn" class="icon-btn" title="Maximize Window">
+                <svg id="maximizeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+            </button>
+            
+            <!-- Settings -->
+            <button id="settingsBtn" class="icon-btn" title="Settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Panel (Hidden by default) -->
+    <div id="settingsPanel" class="settings-panel hidden">
+        <div class="settings-header">
+            <h3>Settings</h3>
+            <button id="closeSettings" class="close-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="settings-content">
+            <!-- Theme -->
+            <div class="setting-group">
+                <label>Theme</label>
+                <select id="themeSelect" class="setting-select">
+                    <option value="dark">Dark</option>
+                    <option value="midnight">Midnight Blue</option>
+                    <option value="forest">Forest Green</option>
+                    <option value="sunset">Sunset Purple</option>
+                </select>
+            </div>
+            
+            <!-- Font Size -->
+            <div class="setting-group">
+                <label>Font Size</label>
+                <select id="fontSizeSelect" class="setting-select">
+                    <option value="small">Small</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="large">Large</option>
+                    <option value="xlarge">X-Large</option>
+                </select>
+            </div>
+            
+            <!-- Line Spacing -->
+            <div class="setting-group">
+                <label>Line Spacing</label>
+                <select id="lineSpacingSelect" class="setting-select">
+                    <option value="compact">Compact</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="relaxed">Relaxed</option>
+                </select>
+            </div>
+            
+            <!-- Word Wrap -->
+            <div class="setting-group">
+                <label>Word Wrap</label>
+                <button id="wrapBtn" class="toggle-btn active">
+                    <span class="toggle-indicator"></span>
+                    <span class="toggle-text">On</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main editor area -->
+    <div class="editor-container">
+        <textarea 
+            id="editor" 
+            class="editor" 
+            placeholder="Start typing..."
+            spellcheck="false"
+            autofocus
+        ></textarea>
+    </div>
+
+    <!-- Auto-save indicator -->
+    <div id="saveIndicator" class="save-indicator">Auto-saved</div>
+
+    <!-- Neutralino.js client library -->
+    <script src="js/neutralino.js"></script>
+    
+    <!-- Main application script -->
+    <script src="script.js"></script>
+</body>
+</html>
