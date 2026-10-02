@@ -11,10 +11,7 @@
 ---
 
 
-
-
-
-
+This was initially a desktop app built to be a notepad alternative, but due to it not meeting requirement expectation, i eventually archived it, your free to modify and use it.
 
 
 
