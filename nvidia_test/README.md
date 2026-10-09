@@ -38,7 +38,7 @@ If you want to pull the absolute latest list of working models:
 4. Copy those model IDs and update the array inside `script.js` in your repo to use them in the UI.
 
 
-<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/7f6afe89-7795-4be3-9f68-48596c243502" />
+<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/7f6afe89-7795-4be3-9f68-48596c243502"/>
 
 
 ## Current Model List (As of April 1, 2026)
