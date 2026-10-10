@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unlimited-OCR v2</title><link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header><div class="brand"><div class="brand-mark">U</div><div><div class="eyebrow">LOCAL DOCUMENT WORKSPACE</div><h1>Unlimited-OCR <span>v2.1</span></h1><p class="subtitle">Private, on-device document extraction</p></div></div><div id="serverStatus" class="status-pill"><i></i> Connecting…</div></header>
+<main>
+<section class="card">
+<div class="section-title"><span class="step">01</span><div><h2>Choose a document</h2><p class="section-subtitle">Select multiple images and PDFs to process them sequentially in one job.</p></div></div>
+<div id="dropzone" class="dropzone" tabindex="0"><strong>Drop images or PDFs here</strong><span>or</span><button id="browseBtn" class="secondary" type="button">Browse files</button><small>PNG, JPG, WEBP, BMP, TIFF, PDF · Up to 100 MB</small><input id="fileInput" type="file" multiple accept=".png,.jpg,.jpeg,.webp,.bmp,.tif,.tiff,.pdf" hidden></div>
+<div id="fileInfo" class="file-info hidden"></div>
+</section>
+<section class="card">
+<div class="section-title"><span class="step">02</span><div><h2>Configure OCR</h2><p class="section-subtitle">Tune recognition settings before starting the job.</p></div></div>
+<div class="grid">
+<label>Output style<select id="mode"><option value="flow">Flow — clean reading order</option><option value="structured">Structured — preserve page boundaries</option></select></label>
+<label>Prompt<input id="prompt" value="&lt;image&gt;document parsing."></label>
+<label>Base size<input id="baseSize" type="number" min="256" max="2048" value="1024"></label>
+<label>Image size<input id="imageSize" type="number" min="256" max="1536" value="640"></label>
+<label>Max output tokens<input id="maxLength" type="number" min="256" max="65536" value="32768"></label>
+<label>Temperature<input id="temperature" type="number" min="0" max="2" step="0.1" value="0"></label>
+<label>No-repeat n-gram size<input id="ngramSize" type="number" min="0" max="100" value="35"></label>
+<label>N-gram window<input id="ngramWindow" type="number" min="0" max="4096" value="128"></label>
+</div>
+<label class="check"><input id="cropMode" type="checkbox" checked> Enable crop mode (recommended for document pages)</label>
+<div class="actions"><button id="runBtn" disabled><span class="button-icon">▶</span> Run OCR</button><button id="cancelBtn" class="danger" disabled>Cancel operation</button></div>
+</section>
+<section id="progressCard" class="card hidden">
+<div class="progress-head"><h2>Processing document</h2><strong id="percent">0%</strong></div>
+<p id="stage">Queued</p><div class="progress-track"><div id="progressFill"></div></div><div class="muted" id="progressDetail"></div><p id="error" class="error hidden"></p>
+</section>
+<section id="resultCard" class="card hidden">
+<div class="result-head"><div class="section-title"><span class="step">03</span><div><h2>Review and export</h2><p class="section-subtitle">Inspect the cleaned result, make edits, then save when ready.</p></div></div><button id="discardBtn" class="secondary">Discard result</button></div>
+<div class="tabs"><button class="tab active" data-view="preview">Preview & edit</button><button class="tab" data-view="raw">Raw model output</button></div>
+<div id="previewPane"><textarea id="resultText" spellcheck="false" aria-label="Editable OCR result"></textarea></div>
+<pre id="rawPane" class="raw hidden"></pre>
+<div class="save-grid">
+<label>Filename <input id="outputName" placeholder="Document" value="Document"></label>
+<label>Output folder <div class="folder-row"><input id="outputDir" placeholder="F:\Documents\OCR"><button id="browseFolderBtn" type="button" class="secondary">Browse…</button></div></label>
+</div>
+<fieldset><legend>Export formats</legend><label class="check"><input type="checkbox" value="txt" class="format" checked> TXT</label><label class="check"><input type="checkbox" value="md" class="format" checked> Markdown</label><label class="check"><input type="checkbox" value="html" class="format"> HTML</label><label class="check"><input type="checkbox" value="pdf" class="format"> PDF</label></fieldset>
+<div class="actions"><button id="saveBtn"><span class="button-icon">↓</span> Save output</button><button id="discardEditsBtn" class="secondary">Reset edits to cleaned output</button></div>
+<p id="saveMessage" class="muted"></p>
+</section>
+</main>
+<footer><span class="footer-dot"></span> Runs locally on this computer <span class="footer-separator">·</span> No cloud API <span class="footer-separator">·</span> 127.0.0.1</footer>
+<script src="/static/app.js"></script>
+</body></html>
