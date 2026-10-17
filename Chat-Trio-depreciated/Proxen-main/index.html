@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <!-- Theme flicker prevention — must be first -->
+    <script>
+        (function(){
+            var t = localStorage.getItem('proxen_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Proxen — AI-powered task management, locally</title>
+    <meta name="google-site-verification" content="google-site-verification=mkMJ_7ghtkSU3ssMFUsK_pOe76gULNfzKuectzQQVKQ" />
+    <meta name="description" content="Proxen is a privacy-first AI task manager. You talk, the AI organizes. No accounts, no servers, no tracking. Powered by Gemma 4.">
+    <meta name="theme-color" content="#0d0f14">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Proxen — AI task management, locally">
+    <meta property="og:description" content="You talk. The AI organizes. No accounts, no servers. Privacy by architecture.">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/assets/icon-192.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(() => console.log('Proxen PWA Ready'))
+                    .catch(err => console.error('PWA Registration Failed', err));
+            });
+        }
+    </script>
+</head>
+<body>
+
+    <div id="app">
+
+        <!-- ═══════════════════ HEADER ═══════════════════ -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-label">Proxen</div>
+                    <div class="header-divider"></div>
+                    <div class="header-version clickable" id="version-btn" title="View changelog">v1.3</div>
+                </div>
+                <div class="header-right">
+                    <button id="theme-toggle-btn" class="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light mode">
+                        <span class="icon" id="theme-icon">🌙</span>
+                    </button>
+                    <button id="reset-btn" class="reset-btn hidden" title="Clear all data and reset">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═══════════════════ LANDING ═══════════════════ -->
+        <section id="view-landing" class="view-section hidden">
+            <div class="landing-container">
+                <div class="landing-content">
+
+                    <!-- Hero -->
+                    <div class="landing-header">
+                        <h1 class="landing-title">
+                            <span class="title-line primary">You talk.</span>
+                            <span class="title-line primary">The AI organizes.</span>
+                            <span class="title-line secondary">The task gets done.</span>
+                        </h1>
+                        <p class="landing-tagline">
+                            A local-first productivity companion powered by Gemma&nbsp;4. No accounts, no servers,
+                            no tracking — just you and your tasks.
+                        </p>
+                        <div class="title-underline"></div>
+
+                        <!-- Hero CTA -->
+                        <div class="landing-cta" style="margin-top: 2rem;">
+                            <button onclick="app.transition('apiKey')" class="cta-button" id="hero-cta-btn">
+                                <span class="cta-text">Start Organizing</span>
+                                <span class="cta-arrow">→</span>
+                            </button>
+                            <a href="#how-it-works" class="cta-secondary">
+                                How it works ↓
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- What makes it different — 4-card grid -->
+                    <div class="landing-sections">
+                        <div class="landing-section">
+                            <h2 class="section-title">Built different</h2>
+                            <div class="feature-grid">
+                                <div class="feature-card">
+                                    <span class="card-icon">🔐</span>
+                                    <div class="card-title">No accounts</div>
+                                    <div class="card-text">No registration, no auth, no user profiles. Ever.</div>
+                                </div>
+                                <div class="feature-card">
+                                    <span class="card-icon">🖥️</span>
+                                    <div class="card-title">No servers</div>
+                                    <div class="card-text">Your data lives in your browser. We have no backend to breach.</div>
+                                </div>
+                                <div class="feature-card">
+                                    <span class="card-icon">☁️</span>
+                                    <div class="card-title">No cloud</div>
+                                    <div class="card-text">Local-only. Device-specific. Private by architecture.</div>
+                                </div>
+                                <div class="feature-card">
+                                    <span class="card-icon">📡</span>
+                                    <div class="card-title">No tracking</div>
+                                    <div class="card-text">We literally cannot see what you're doing.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- How it works -->
+                        <div class="landing-section" id="how-it-works">
+                            <h2 class="section-title">How it works</h2>
+                            <ul class="feature-list">
+                                <li class="feature-item">
+                                    <span class="feature-arrow">→</span>
+                                    <span>You speak naturally. No forms, no checkboxes, no structure.</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-arrow">→</span>
+                                    <span>The AI translates your thoughts into organized, actionable tasks.</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-arrow">→</span>
+                                    <span>Say you're done. The AI updates the state. No manual clicking.</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-arrow">→</span>
+                                    <span>Your task list reflects reality — not a wishful to-do board.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Transparency accordion -->
+                        <div class="landing-section">
+                            <div class="collapsible-header" id="transparency-toggle">
+                                <h2 class="section-title" style="margin:0">Technical transparency</h2>
+                                <span class="collapse-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content" id="transparency-content">
+                                <div class="transparency-grid" style="margin-top: 1rem;">
+                                    <div class="transparency-item">
+                                        <span class="transparency-label">AI Model</span>
+                                        <span class="transparency-value">Gemma 4 31B IT (Google)</span>
+                                    </div>
+                                    <div class="transparency-item">
+                                        <span class="transparency-label">API Endpoint</span>
+                                        <span class="transparency-value">generativelanguage.googleapis.com</span>
+                                    </div>
+                                    <div class="transparency-item">
+                                        <span class="transparency-label">Data Flow</span>
+                                        <span class="transparency-value">Browser → Google API → Browser</span>
+                                    </div>
+                                    <div class="transparency-item">
+                                        <span class="transparency-label">Proxen's Access</span>
+                                        <span class="transparency-value">None. Zero data passes through Proxen servers.</span>
+                                    </div>
+                                    <div class="transparency-item">
+                                        <span class="transparency-label">Storage</span>
+                                        <span class="transparency-value">Local device only — browser localStorage</span>
+                                    </div>
+                                </div>
+                                <div class="transparency-footer">
+                                    <button onclick="app.showTechnicalDetails()" class="link-button">
+                                        View full technical details →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- About the AI -->
+                        <div class="landing-section">
+                            <h2 class="section-title">About the AI</h2>
+                            <p class="section-text">
+                                The AI companion isn't a cheerleader. It's not a therapist.
+                                It's not trying to be your friend.
+                            </p>
+                            <p class="section-text">
+                                Think of it as <span class="text-emphasis">a tired but competent colleague</span> who helps
+                                you track what needs doing. Slightly dry. Occasionally sarcastic. Always focused.
+                            </p>
+                            <p class="section-text">
+                                It will acknowledge your progress without making it feel like a participation trophy.
+                            </p>
+                        </div>
+
+                        <!-- Landing footer strip -->
+                        <div class="landing-footer">
+                            <p class="footer-text">
+                                <strong>Early-Stage Project:</strong> v1.3. Proxen does not collect or transmit data to
+                                any Proxen server. It cannot protect against compromised browsers, malicious extensions,
+                                or stolen devices.
+                            </p>
+                            <div class="footer-links">
+                                <a href="privacy.html" class="link-button">Privacy &amp; Data</a>
+                                <span class="footer-divider">•</span>
+                                <a href="security.html" class="link-button">Security Model</a>
+                                <span class="footer-divider">•</span>
+                                <a href="https://github.com/xensenx/Proxen" target="_blank" rel="noopener" class="link-button">Source Code</a>
+                            </div>
+                        </div>
+
+                        <!-- Second CTA at bottom -->
+                        <div class="landing-cta" style="margin-top: 2.5rem; padding-top: 2.5rem; border-top: 1px solid var(--border-subtle);">
+                            <button onclick="app.transition('apiKey')" class="cta-button">
+                                <span class="cta-text">Start Organizing</span>
+                                <span class="cta-arrow">→</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════ API KEY VIEW ═══════════════════ -->
+        <section id="view-apiKey" class="view-section centered-view hidden">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2 class="form-title">Authentication</h2>
+                    <div class="title-underline" style="margin: 0.5rem 0 0;"></div>
+                </div>
+
+                <div class="form-description">
+                    <p class="section-text">
+                        Proxen uses <span class="text-emphasis">Google's Gemma 4 31B IT</span> model for all AI
+                        interactions — higher limits than most alternatives.
+                    </p>
+                    <p class="section-text">
+                        Your key is stored in <code class="code-inline">localStorage</code> and sent directly to
+                        Google's API. Proxen never sees it.
+                    </p>
+                    <p class="section-text muted">
+                        Direct browser → Google communication. No Proxen servers in the chain.
+                    </p>
+                </div>
+
+                <div class="form-inputs">
+                    <div class="input-wrapper" style="border-radius: var(--radius-md); padding: 0;">
+                        <input type="password"
+                               id="api-key-input"
+                               placeholder="Paste your Gemini API key"
+                               class="text-input"
+                               autocomplete="off"
+                               style="padding: 12px 44px 12px 16px;">
+                        <div class="input-icon">
+                            <div class="key-dots">⨀</div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <div class="form-links">
+                            <a href="https://aistudio.google.com/app/apikey"
+                               target="_blank" rel="noopener"
+                               class="form-link">
+                                Get a key from Google AI Studio →
+                            </a>
+                            <button onclick="app.showTestModal()" class="form-link test-link">
+                                Test your API key first →
+                            </button>
+                        </div>
+                        <button onclick="app.saveApiKey()" class="btn-primary">
+                            Continue
+                        </button>
+                    </div>
+                    <p id="api-error" class="error-text hidden">
+                        Invalid key format. Check the key and try again.
+                    </p>
+                </div>
+
+                <!-- API Scope Details -->
+                <div class="api-scope-details">
+                    <button class="scope-toggle" id="scope-toggle">
+                        <span class="scope-toggle-text">What will this API key be used for?</span>
+                        <span class="scope-toggle-icon">▼</span>
+                    </button>
+                    <div class="scope-content hidden" id="scope-content">
+                        <div class="scope-grid">
+                            <div class="scope-item">
+                                <span class="scope-label">Model</span>
+                                <span class="scope-value">Gemma 4 31B IT (Instruction Tuned)</span>
+                            </div>
+                            <div class="scope-item">
+                                <span class="scope-label">Endpoint</span>
+                                <span class="scope-value">generativelanguage.googleapis.com/v1beta/models/gemma-4-31b-it:generateContent</span>
+                            </div>
+                            <div class="scope-item">
+                                <span class="scope-label">Purpose</span>
+                                <span class="scope-value">Text generation for task management (inference only)</span>
+                            </div>
+                            <div class="scope-item">
+                                <span class="scope-label">Not Used For</span>
+                                <span class="scope-value">Fine-tuning, training, data storage, or analytics</span>
+                            </div>
+                            <div class="scope-item">
+                                <span class="scope-label">Transmission</span>
+                                <span class="scope-value">Sent directly from your browser to Google — never through Proxen</span>
+                            </div>
+                            <div class="scope-item">
+                                <span class="scope-label">Billing</span>
+                                <span class="scope-value">Gemma 4 falls under the free tier — no billing required</span>
+                            </div>
+                        </div>
+                        <div class="scope-recommendation">
+                            <strong>Recommendation:</strong> Create a restricted or project-specific API key.
+                            Manage keys at <a href="https://aistudio.google.com/app/apikey" target="_blank" class="inline-link">Google AI Studio</a>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════ API TEST MODAL ═══════════════════ -->
+        <div id="test-modal" class="modal hidden">
+            <div class="modal-overlay" onclick="app.closeTestModal()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Test API Key</h3>
+                    <button class="modal-close" onclick="app.closeTestModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-description">
+                        Verify your API key before continuing. Makes test requests to Gemma 4 31B IT.
+                    </p>
+                    <input type="password"
+                           id="test-api-input"
+                           placeholder="Paste your API key"
+                           class="text-input">
+                    <button onclick="app.runAPITest()" class="btn-primary" id="test-btn" style="margin-top: 0.75rem;">
+                        Run Test
+                    </button>
+                    <div id="test-results" class="test-results hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════ TECHNICAL DETAILS MODAL ═══════════════════ -->
+        <div id="technical-modal" class="modal hidden">
+            <div class="modal-overlay" onclick="app.closeTechnicalModal()"></div>
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3 class="modal-title">Technical Details &amp; Data Flow</h3>
+                    <button class="modal-close" onclick="app.closeTechnicalModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <section class="info-section">
+                        <h4 class="info-subtitle">Data Flow</h4>
+                        <div class="data-flow-diagram">
+                            <div class="flow-step">Your Browser</div>
+                            <div class="flow-arrow">↓ HTTPS</div>
+                            <div class="flow-step">Google AI API</div>
+                            <div class="flow-arrow">↓ HTTPS</div>
+                            <div class="flow-step">Your Browser</div>
+                        </div>
+                        <p class="info-text" style="margin-top: 0.75rem;">
+                            Your browser makes a direct HTTPS request to Google's API. The response returns
+                            directly to your browser. Proxen's servers are not part of this chain.
+                        </p>
+                    </section>
+
+                    <section class="info-section">
+                        <h4 class="info-subtitle">What Proxen Does Not Do</h4>
+                        <ul class="info-list">
+                            <li>Does not log requests or responses</li>
+                            <li>Does not store messages on any server</li>
+                            <li>Does not forward data to third parties</li>
+                            <li>Does not perform analytics or telemetry</li>
+                            <li>Does not use your data for fine-tuning or training</li>
+                            <li>Does not create user accounts or profiles</li>
+                            <li>Does not track you across sessions or devices</li>
+                        </ul>
+                    </section>
+
+                    <section class="info-section">
+                        <h4 class="info-subtitle">Local Storage Details</h4>
+                        <p class="info-text">Proxen stores the following in your browser's <code>localStorage</code>:</p>
+                        <ul class="info-list">
+                            <li><strong>API Key:</strong> Your Google API key (stored by browser, not Proxen)</li>
+                            <li><strong>Username:</strong> The name you provide for personalization</li>
+                            <li><strong>Tasks:</strong> Your task list and completion status</li>
+                            <li><strong>Conversation History:</strong> Last 6 messages for context (local only)</li>
+                        </ul>
+                    </section>
+
+                    <section class="info-section">
+                        <h4 class="info-subtitle">Verification</h4>
+                        <ul class="info-list">
+                            <li>Open browser DevTools (F12) → Network tab</li>
+                            <li>Confirm all API requests go to <code>generativelanguage.googleapis.com</code></li>
+                            <li>Review source code at <a href="https://github.com/xensenx/Proxen" target="_blank" class="inline-link">github.com/xensenx/Proxen</a></li>
+                            <li>Inspect localStorage: DevTools → Application → Local Storage</li>
+                        </ul>
+                    </section>
+
+                    <section class="info-section">
+                        <h4 class="info-subtitle">Source Code &amp; Contact</h4>
+                        <p class="info-text">
+                            <strong>Repository:</strong> <a href="https://github.com/xensenx/Proxen" target="_blank" class="inline-link">github.com/xensenx/Proxen</a><br>
+                            <strong>Creator:</strong> <a href="https://github.com/xensenx" target="_blank" class="inline-link">github.com/xensenx</a>
+                        </p>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════ PRIVACY MODAL ═══════════════════ -->
+        <div id="privacy-modal" class="modal hidden">
+            <div class="modal-overlay" onclick="app.closePrivacyModal()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Privacy &amp; Data Handling</h3>
+                    <button class="modal-close" onclick="app.closePrivacyModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <section class="info-section">
+                        <h4 class="info-subtitle">What Data Is Stored</h4>
+                        <p class="info-text">Proxen stores the following on your device only:</p>
+                        <ul class="info-list">
+                            <li>Your Google API key</li>
+                            <li>Your chosen username</li>
+                            <li>Your task list</li>
+                            <li>Recent conversation context (last 6 messages)</li>
+                        </ul>
+                    </section>
+                    <section class="info-section">
+                        <h4 class="info-subtitle">What Is Never Collected</h4>
+                        <ul class="info-list">
+                            <li>Email addresses or contact information</li>
+                            <li>IP addresses or location data</li>
+                            <li>Usage analytics or telemetry</li>
+                            <li>Device fingerprints or browsing history</li>
+                        </ul>
+                    </section>
+                    <section class="info-section">
+                        <h4 class="info-subtitle">How to Remove All Data</h4>
+                        <ol class="info-list numbered">
+                            <li>Click "Reset" in the header, or</li>
+                            <li>Clear browser localStorage in DevTools, or</li>
+                            <li>Clear site data for this domain</li>
+                        </ol>
+                    </section>
+                    <div style="padding-top: 0.5rem;">
+                        <a href="privacy.html" class="link-button">View full privacy page →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════ THREAT MODEL MODAL ═══════════════════ -->
+        <div id="threat-modal" class="modal hidden">
+            <div class="modal-overlay" onclick="app.closeThreatModal()"></div>
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3 class="modal-title">Security Model</h3>
+                    <button class="modal-close" onclick="app.closeThreatModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <section class="info-section">
+                        <h4 class="info-subtitle protected">What Proxen Protects Against</h4>
+                        <ul class="info-list">
+                            <li><strong>Server breaches:</strong> There are no Proxen servers to breach</li>
+                            <li><strong>Account database leaks:</strong> There are no user accounts</li>
+                            <li><strong>Third-party tracking:</strong> No analytics or tracking scripts</li>
+                            <li><strong>Data mining:</strong> Proxen cannot access or analyze your data</li>
+                            <li><strong>Cross-device profiling:</strong> Data never leaves your device</li>
+                        </ul>
+                    </section>
+                    <section class="info-section">
+                        <h4 class="info-subtitle vulnerable">What Proxen Does Not Protect Against</h4>
+                        <ul class="info-list">
+                            <li><strong>Compromised browsers:</strong> All local data is at risk</li>
+                            <li><strong>Malicious extensions:</strong> Can read localStorage and intercept requests</li>
+                            <li><strong>Stolen devices:</strong> Physical access = data access</li>
+                            <li><strong>Network interception:</strong> HTTPS protects, compromised networks may pose risks</li>
+                            <li><strong>Google API vulnerabilities:</strong> Proxen relies on Google's security</li>
+                        </ul>
+                    </section>
+                    <div style="padding-top: 0.5rem;">
+                        <a href="security.html" class="link-button">View full security model →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════ CHANGELOG MODAL ═══════════════════ -->
+        <div id="changelog-modal" class="modal hidden">
+            <div class="modal-overlay" onclick="app.closeChangelogModal()"></div>
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3 class="modal-title">Version History</h3>
+                    <button class="modal-close" onclick="app.closeChangelogModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <section class="changelog-section">
+                        <div class="version-header">
+                            <h4 class="version-number">v1.3</h4>
+                            <span class="version-date">Current</span>
+                        </div>
+                        <h5 class="version-subtitle">Full UI/UX Redesign</h5>
+                        <ul class="changelog-list">
+                            <li>Dark mode &amp; light mode with smooth theme toggle</li>
+                            <li>Premium redesign — Inter font, glassmorphism, matte cards</li>
+                            <li>Proper chat history with timestamps and fade-in-up animations</li>
+                            <li>Professional header with frosted glass backdrop</li>
+                            <li>Dedicated privacy.html and security.html pages</li>
+                            <li>Professional footer with Ko-fi support link</li>
+                            <li>Gemma 4 API configuration fixes (systemInstruction, thinkingConfig)</li>
+                            <li>Task drawer spring animation improvements</li>
+                            <li>Subtle hero gradient and radial glow background</li>
+                        </ul>
+                    </section>
+
+                    <section class="changelog-section">
+                        <div class="version-header">
+                            <h4 class="version-number">v1.2</h4>
+                            <span class="version-date">Previous</span>
+                        </div>
+                        <h5 class="version-subtitle">Task Drawer &amp; UI Refinements</h5>
+                        <ul class="changelog-list">
+                            <li>Implemented pull-down Task Drawer</li>
+                            <li>Replaced sidebar with unobtrusive task management UI</li>
+                            <li>Added visual peek animation when tasks are added</li>
+                            <li>Improved task count visibility with badge system</li>
+                            <li>Simplified chat timeline</li>
+                        </ul>
+                    </section>
+
+                    <section class="changelog-section">
+                        <div class="version-header">
+                            <h4 class="version-number">v1.1</h4>
+                            <span class="version-date">Transparency Update</span>
+                        </div>
+                        <h5 class="version-subtitle">Transparency &amp; Trust</h5>
+                        <ul class="changelog-list">
+                            <li>Added collapsible transparency section on landing</li>
+                            <li>Added Privacy &amp; Data Handling page</li>
+                            <li>Added Threat Model documentation</li>
+                            <li>Added interactive changelog</li>
+                        </ul>
+                    </section>
+
+                    <section class="changelog-section">
+                        <div class="version-header">
+                            <h4 class="version-number">v1.0</h4>
+                            <span class="version-date">Initial Release</span>
+                        </div>
+                        <h5 class="version-subtitle">Core Functionality</h5>
+                        <ul class="changelog-list">
+                            <li>Natural language task management</li>
+                            <li>Gemma 4 31B IT integration via Google API</li>
+                            <li>Local-first, zero-server architecture</li>
+                            <li>Smart intent detection and context awareness</li>
+                        </ul>
+                    </section>
+
+                    <section class="changelog-section roadmap">
+                        <h4 class="roadmap-title">Planned Improvements</h4>
+                        <ul class="changelog-list">
+                            <li>Task prioritization and scheduling features</li>
+                            <li>Export functionality for task data</li>
+                            <li>Enhanced mobile experience</li>
+                            <li>Optional task categories and tags</li>
+                        </ul>
+                        <p class="roadmap-note">Roadmap subject to change based on feedback.</p>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════ NAME VIEW ═══════════════════ -->
+        <section id="view-name" class="view-section centered-view hidden">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2 class="form-title">What should we call you?</h2>
+                    <div class="title-underline" style="margin: 0.5rem 0 0;"></div>
+                </div>
+                <div class="form-description">
+                    <p class="section-text">
+                        Purely for personalization. The AI will use this name in conversation.
+                        Real name, nickname, alias — it doesn't matter.
+                    </p>
+                    <p class="section-text muted">
+                        Stored locally only. Never leaves your device.
+                    </p>
+                </div>
+                <div class="form-inputs">
+                    <input type="text"
+                           id="name-input"
+                           placeholder="Name or alias"
+                           autocomplete="off"
+                           class="text-input">
+                    <div class="form-actions right">
+                        <button onclick="app.saveName()" class="btn-primary">Begin →</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════ WORKSPACE ═══════════════════ -->
+        <section id="view-workspace" class="view-section workspace-view hidden">
+
+            <!-- TASK DRAWER -->
+            <div id="task-drawer" class="task-drawer">
+                <div class="drawer-tab" id="drawer-tab" role="button" aria-label="Toggle task drawer">
+                    <div class="tab-handle"></div>
+                    <span class="task-badge" id="task-badge">0</span>
+                </div>
+
+                <div class="drawer-panel" id="drawer-panel">
+                    <div class="drawer-header">
+                        <h3>Tasks</h3>
+                        <button class="drawer-close-btn" id="drawer-close" aria-label="Close drawer">×</button>
+                    </div>
+                    <div class="drawer-body">
+                        <div class="task-group">
+                            <div class="task-group-header">
+                                <span>Active</span>
+                                <span class="task-count" id="active-count">0</span>
+                            </div>
+                            <div id="active-tasks" class="task-list"></div>
+                        </div>
+                        <div class="task-group completed-group">
+                            <div class="task-group-header">
+                                <span>Completed</span>
+                                <span class="task-count" id="completed-count">0</span>
+                            </div>
+                            <div id="completed-tasks" class="task-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Setup Overlay -->
+            <div id="setup-overlay" class="setup-overlay hidden">
+                <div class="setup-content">
+                    <div class="setup-spinner">
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                    </div>
+                    <p class="setup-text">Initializing workspace...</p>
+                    <p class="setup-subtext">Setting up your AI companion</p>
+                </div>
+            </div>
+
+            <!-- Main Chat -->
+            <div class="main-content">
+                <div id="chat-timeline" class="chat-timeline">
+                    <div id="empty-workspace" class="empty-workspace">
+                        <div class="empty-icon">○</div>
+                        <p class="empty-text">System idle</p>
+                        <p class="empty-subtext">Start a conversation to begin</p>
+                    </div>
+                </div>
+
+                <!-- Suggestions Panel -->
+                <div id="suggestions-panel" class="suggestions-panel hidden">
+                    <div class="suggestions-header">Try saying:</div>
+                    <div class="suggestion-pills">
+                        <button class="suggestion-pill" data-prompt="I need to finish my assignment and report by Thursday">
+                            "I need to finish my assignment and report by Thursday"
+                        </button>
+                        <button class="suggestion-pill" data-prompt="Done with the assignments">
+                            "Done with the assignments"
+                        </button>
+                        <button class="suggestion-pill" data-prompt="Help me break down studying for finals">
+                            "Help me break down studying for finals"
+                        </button>
+                        <button class="suggestion-pill" data-prompt="What should I tackle first?">
+                            "What should I tackle first?"
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-section">
+                <div class="status-bar">
+                    <div class="status-left">
+                        <div id="status-dot" class="status-dot ready"></div>
+                        <span id="status-text" class="status-text">Ready</span>
+                    </div>
+                    <div class="status-right">
+                        <button id="help-btn" class="help-btn" title="Show suggestions" aria-label="Show suggestions">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="input-wrapper">
+                    <textarea id="user-input"
+                              placeholder="What needs doing?"
+                              rows="1"
+                              class="user-input"
+                              aria-label="Message input"></textarea>
+                    <button id="send-btn" disabled class="send-btn" aria-label="Send message">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="typing-indicator" class="typing-indicator hidden">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-label">Processing</span>
+                </div>
+            </div>
+
+        </section>
+
+    </div><!-- /#app -->
+
+    <!-- ═══════════════════ FOOTER ═══════════════════ -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <span class="footer-meta">Proxen · © 2026 · <a href="https://github.com/xensenx" target="_blank" rel="noopener" class="footer-link">xensenx</a></span>
+            <nav class="footer-nav" aria-label="Footer navigation">
+                <a href="privacy.html" class="footer-link">Privacy</a>
+                <span class="footer-divider-dot">•</span>
+                <a href="security.html" class="footer-link">Security</a>
+                <span class="footer-divider-dot">•</span>
+                <a href="https://github.com/xensenx/Proxen" target="_blank" rel="noopener" class="footer-link">Source</a>
+            </nav>
+            <a href="https://ko-fi.com/xensenx" target="_blank" rel="noopener" class="kofi-btn" title="Support on Ko-fi">
+                <span class="kofi-icon">☕</span>
+                <span>Support on Ko-fi</span>
+            </a>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

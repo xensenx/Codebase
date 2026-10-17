@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('proxen_theme');
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security &amp; Threat Model — Proxen</title>
+  <meta name="description" content="Proxen's full security architecture and threat model. Understand exactly what Proxen protects you from, what it doesn't, and how to verify our claims yourself." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Design Tokens ─────────────────────────────────────────── */
+    :root {
+      --bg-primary:      #0d0f14;
+      --bg-secondary:    rgba(18, 22, 30, 0.88);
+      --bg-elevated:     rgba(34, 38, 52, 0.96);
+      --accent-primary:  #6c63ff;
+      --accent-hover:    #857dff;
+      --text-primary:    #eef0f6;
+      --text-secondary:  #a8adc0;
+      --border-primary:  rgba(60, 65, 90, 0.5);
+      --success:         #6ee7a0;
+      --success-bg:      rgba(110, 231, 160, 0.07);
+      --success-border:  rgba(110, 231, 160, 0.2);
+      --warning:         #f0b860;
+      --warning-bg:      rgba(240, 184, 96, 0.07);
+      --warning-border:  rgba(240, 184, 96, 0.2);
+      --error:           #f07070;
+      --header-height:   62px;
+      --radius:          10px;
+      --radius-sm:       6px;
+    }
+
+    [data-theme="light"] {
+      --bg-primary:      #f5f4f0;
+      --bg-secondary:    rgba(242, 240, 235, 0.92);
+      --bg-elevated:     rgba(255, 253, 248, 0.98);
+      --accent-primary:  #5a52e8;
+      --accent-hover:    #4840d4;
+      --text-primary:    #1a1b2e;
+      --text-secondary:  #4a4b62;
+      --border-primary:  rgba(180, 178, 170, 0.5);
+      --success:         #28a85b;
+      --success-bg:      rgba(40, 168, 91, 0.07);
+      --success-border:  rgba(40, 168, 91, 0.22);
+      --warning:         #c47f00;
+      --warning-bg:      rgba(196, 127, 0, 0.07);
+      --warning-border:  rgba(196, 127, 0, 0.22);
+      --error:           #c94040;
+    }
+
+    /* ── Reset & Base ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--header-height);
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-primary);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      display: flex;
+      align-items: center;
+    }
+
+    .header-inner {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .logo-mark {
+      width: 30px;
+      height: 30px;
+      background: var(--accent-primary);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-mark svg {
+      width: 17px;
+      height: 17px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .logo-wordmark {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 6px 12px;
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+
+    .back-link:hover {
+      color: var(--text-primary);
+      border-color: var(--accent-primary);
+      background: rgba(108, 99, 255, 0.08);
+    }
+
+    .theme-toggle {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle:hover {
+      color: var(--text-primary);
+      border-color: var(--accent-primary);
+      background: rgba(108, 99, 255, 0.08);
+    }
+
+    .theme-toggle svg {
+      width: 16px;
+      height: 16px;
+      transition: opacity 0.2s;
+    }
+
+    .icon-sun { display: none; }
+    .icon-moon { display: block; }
+    [data-theme="light"] .icon-sun  { display: block; }
+    [data-theme="light"] .icon-moon { display: none; }
+
+    /* ── Page Layout ────────────────────────────────────────────── */
+    .page-wrap {
+      flex: 1;
+      padding: 60px 24px 80px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* ── Page Hero ──────────────────────────────────────────────── */
+    .page-hero {
+      margin-bottom: 52px;
+    }
+
+    .page-hero .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-primary);
+      margin-bottom: 14px;
+    }
+
+    .page-hero .eyebrow::before {
+      content: '';
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--accent-primary);
+      border-radius: 2px;
+    }
+
+    .page-hero h1 {
+      font-size: 2.15rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+
+    .page-hero .subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      max-width: 600px;
+    }
+
+    /* ── Section ────────────────────────────────────────────────── */
+    .section {
+      margin-bottom: 52px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-primary);
+    }
+
+    .section-heading .h-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--accent-primary);
+      background: rgba(108, 99, 255, 0.1);
+      border: 1px solid rgba(108, 99, 255, 0.2);
+      border-radius: 4px;
+      padding: 2px 7px;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+
+    .prose {
+      font-size: 0.96rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+    }
+
+    .prose strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* ── Data Flow Diagram ──────────────────────────────────────── */
+    .flow-diagram {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius);
+      padding: 36px 24px 28px;
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .flow-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .flow-box {
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      border: 1px solid;
+    }
+
+    .flow-box.primary {
+      background: rgba(108, 99, 255, 0.12);
+      border-color: rgba(108, 99, 255, 0.35);
+      color: var(--accent-primary);
+    }
+
+    .flow-box.api {
+      background: rgba(110, 231, 160, 0.09);
+      border-color: rgba(110, 231, 160, 0.3);
+      color: var(--success);
+    }
+
+    .flow-label {
+      font-size: 0.68rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .flow-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 0 10px;
+      flex-shrink: 0;
+    }
+
+    .flow-arrow-line {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .flow-arrow-shaft {
+      width: 46px;
+      height: 2px;
+      background: var(--border-primary);
+      position: relative;
+    }
+
+    .flow-arrow-shaft::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left: 7px solid var(--text-secondary);
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      opacity: 0.5;
+    }
+
+    .flow-arrow-tag {
+      font-size: 0.63rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--success);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      border-radius: 3px;
+      padding: 1px 6px;
+      white-space: nowrap;
+    }
+
+    .flow-note {
+      margin-top: 20px;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .flow-note::before {
+      content: '\29B8';
+      color: var(--error);
+      font-size: 0.9rem;
+    }
+
+    /* ── Protects / Doesn't Protect Lists ───────────────────────── */
+    .threat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .threat-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid;
+      transition: border-color 0.15s;
+    }
+
+    .threat-item.good {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+    }
+
+    .threat-item.warn {
+      background: var(--warning-bg);
+      border-color: var(--warning-border);
+    }
+
+    .threat-prefix {
+      font-size: 1rem;
+      line-height: 1;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .threat-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .threat-title {
+      font-size: 0.91rem;
+      font-weight: 600;
+      margin-bottom: 3px;
+      line-height: 1.3;
+    }
+
+    .threat-item.good .threat-title { color: var(--success); }
+    .threat-item.warn .threat-title { color: var(--warning); }
+
+    .threat-desc {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ── Honest Assessment Card ─────────────────────────────────── */
+    .assessment-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .assessment-card p {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+    }
+
+    .assessment-card p + p {
+      margin-top: 14px;
+    }
+
+    .assessment-card strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .weak-link-list {
+      margin: 12px 0 0 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .weak-link-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    .weak-link-list li::before {
+      content: '\203A';
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .callout-box {
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: rgba(240, 112, 112, 0.06);
+      border: 1px solid rgba(240, 112, 112, 0.2);
+      border-radius: var(--radius-sm);
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    [data-theme="light"] .callout-box {
+      background: rgba(201, 64, 64, 0.05);
+      border-color: rgba(201, 64, 64, 0.18);
+    }
+
+    .callout-box .callout-icon {
+      font-size: 1rem;
+      line-height: 1.4;
+      flex-shrink: 0;
+    }
+
+    /* ── Verification Steps ─────────────────────────────────────── */
+    .verify-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .verify-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .verify-num {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(108, 99, 255, 0.12);
+      border: 1px solid rgba(108, 99, 255, 0.25);
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    .verify-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .verify-body strong {
+      display: block;
+      font-size: 0.91rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .verify-body p {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82em;
+      background: rgba(108, 99, 255, 0.1);
+      border: 1px solid rgba(108, 99, 255, 0.18);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: var(--accent-primary);
+      word-break: break-all;
+    }
+
+    [data-theme="light"] code {
+      background: rgba(90, 82, 232, 0.08);
+      border-color: rgba(90, 82, 232, 0.2);
+    }
+
+    a {
+      color: var(--accent-primary);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Footer ─────────────────────────────────────────────────── */
+    .site-footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-primary);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-left {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .footer-center {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-center a {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 3px 8px;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .footer-center a:hover {
+      color: var(--text-primary);
+      background: rgba(108, 99, 255, 0.08);
+      text-decoration: none;
+    }
+
+    .footer-center a.active {
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    .footer-sep {
+      color: var(--border-primary);
+      font-size: 0.75rem;
+      user-select: none;
+    }
+
+    .footer-right a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 5px 11px;
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-sm);
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+
+    .footer-right a:hover {
+      color: var(--text-primary);
+      border-color: var(--accent-primary);
+      background: rgba(108, 99, 255, 0.08);
+      text-decoration: none;
+    }
+
+    /* ── Responsive ─────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .page-hero h1 { font-size: 1.65rem; }
+      .flow-arrow-shaft { width: 28px; }
+      .footer-inner { justify-content: center; text-align: center; }
+      .footer-left, .footer-right { width: 100%; text-align: center; }
+      .footer-right { display: flex; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo" aria-label="Proxen — back to app">
+        <span class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+          </svg>
+        </span>
+        <span class="logo-wordmark">Proxen</span>
+      </a>
+
+      <div class="header-right">
+        <a href="index.html" class="back-link" aria-label="Back to app">
+          &larr; Back to App
+        </a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark theme">
+          <!-- Sun icon (shown in light mode) -->
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <!-- Moon icon (shown in dark mode) -->
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Main Content ─────────────────────────────────────────────── -->
+  <main class="page-wrap">
+    <div class="container">
+
+      <!-- Page Hero -->
+      <div class="page-hero">
+        <div class="eyebrow">Security &amp; Threat Model</div>
+        <h1>What Proxen protects &mdash; and what it doesn&rsquo;t.</h1>
+        <p class="subtitle">
+          A complete, honest account of Proxen&rsquo;s security architecture. No marketing language.
+          No vague assurances. Just a clear-eyed assessment of how the system is built and
+          where the real risks lie.
+        </p>
+      </div>
+
+      <!-- 01 Security Architecture -->
+      <section class="section" aria-labelledby="sec-arch">
+        <h2 class="section-heading" id="sec-arch">
+          <span class="h-num">01</span>
+          Security Architecture
+        </h2>
+        <div class="prose">
+          <p>
+            Proxen&rsquo;s architecture is designed around the principle of <strong>minimal attack surface</strong>.
+            There are no Proxen servers. There is no Proxen database. Every prompt you type and
+            every response you receive travels exclusively between your browser and Google&rsquo;s AI API
+            over an HTTPS-encrypted connection. Proxen itself is a static web application &mdash; a collection
+            of HTML, CSS, and JavaScript files that runs entirely within your browser&rsquo;s sandbox.
+          </p>
+          <p style="margin-top:14px;">
+            Your API key and conversation history are stored in your browser&rsquo;s <code>localStorage</code>
+            &mdash; on your device, in your browser, under your control. Proxen has no mechanism to
+            transmit this data anywhere, because there is nowhere to transmit it to.
+          </p>
+        </div>
+      </section>
+
+      <!-- 02 Data Flow Diagram -->
+      <section class="section" aria-labelledby="sec-flow">
+        <h2 class="section-heading" id="sec-flow">
+          <span class="h-num">02</span>
+          Data Flow Diagram
+        </h2>
+        <div class="flow-diagram" role="img" aria-label="Data flow: Your Browser communicates via HTTPS with Google AI API and back via HTTPS">
+          <div class="flow-row">
+            <div class="flow-node">
+              <div class="flow-box primary">Your Browser</div>
+              <div class="flow-label">your device</div>
+            </div>
+
+            <div class="flow-arrow">
+              <div class="flow-arrow-line">
+                <div class="flow-arrow-shaft"></div>
+              </div>
+              <div class="flow-arrow-tag">HTTPS &middot; TLS 1.3</div>
+            </div>
+
+            <div class="flow-node">
+              <div class="flow-box api">Google AI API</div>
+              <div class="flow-label">generativelanguage.googleapis.com</div>
+            </div>
+
+            <div class="flow-arrow">
+              <div class="flow-arrow-line">
+                <div class="flow-arrow-shaft"></div>
+              </div>
+              <div class="flow-arrow-tag">HTTPS &middot; TLS 1.3</div>
+            </div>
+
+            <div class="flow-node">
+              <div class="flow-box primary">Your Browser</div>
+              <div class="flow-label">response rendered</div>
+            </div>
+          </div>
+          <div class="flow-note">Proxen servers are not part of this chain.</div>
+        </div>
+      </section>
+
+      <!-- 03 What Proxen Protects Against -->
+      <section class="section" aria-labelledby="sec-protects">
+        <h2 class="section-heading" id="sec-protects">
+          <span class="h-num">03</span>
+          What Proxen Protects Against
+        </h2>
+        <div class="threat-list">
+
+          <div class="threat-item good">
+            <span class="threat-prefix" aria-hidden="true">&#10003;</span>
+            <div class="threat-content">
+              <div class="threat-title">Server breaches</div>
+              <div class="threat-desc">There are no Proxen servers to breach. A compromised Proxen infrastructure cannot expose your data, because no such infrastructure exists.</div>
+            </div>
+          </div>
+
+          <div class="threat-item good">
+            <span class="threat-prefix" aria-hidden="true">&#10003;</span>
+            <div class="threat-content">
+              <div class="threat-title">Account database leaks</div>
+              <div class="threat-desc">There are no user accounts. Proxen never asks for your name, email, or password. There is no Proxen account database that can be leaked.</div>
+            </div>
+          </div>
+
+          <div class="threat-item good">
+            <span class="threat-prefix" aria-hidden="true">&#10003;</span>
+            <div class="threat-content">
+              <div class="threat-title">Third-party tracking</div>
+              <div class="threat-desc">No analytics, no tracking pixels, no telemetry scripts. Proxen loads only its own code and the Google Fonts stylesheet. Your usage is not observed.</div>
+            </div>
+          </div>
+
+          <div class="threat-item good">
+            <span class="threat-prefix" aria-hidden="true">&#10003;</span>
+            <div class="threat-content">
+              <div class="threat-title">Data mining by Proxen</div>
+              <div class="threat-desc">Proxen cannot access or analyze your conversation data. It is a static client application with no backend, no connection pool, and no logging pipeline.</div>
+            </div>
+          </div>
+
+          <div class="threat-item good">
+            <span class="threat-prefix" aria-hidden="true">&#10003;</span>
+            <div class="threat-content">
+              <div class="threat-title">Cross-device profiling</div>
+              <div class="threat-desc">Data never leaves your device via Proxen. Conversations and settings stored in <code>localStorage</code> remain local to that specific browser instance.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 04 What Proxen Does Not Protect Against -->
+      <section class="section" aria-labelledby="sec-not-protect">
+        <h2 class="section-heading" id="sec-not-protect">
+          <span class="h-num">04</span>
+          What Proxen Does Not Protect Against
+        </h2>
+        <div class="threat-list">
+
+          <div class="threat-item warn">
+            <span class="threat-prefix" aria-hidden="true">&#9888;</span>
+            <div class="threat-content">
+              <div class="threat-title">Compromised browsers</div>
+              <div class="threat-desc">If your browser is compromised at the process or OS level, any data in <code>localStorage</code> &mdash; including your API key &mdash; is at risk. Proxen cannot defend against this.</div>
+            </div>
+          </div>
+
+          <div class="threat-item warn">
+            <span class="threat-prefix" aria-hidden="true">&#9888;</span>
+            <div class="threat-content">
+              <div class="threat-title">Malicious browser extensions</div>
+              <div class="threat-desc">Browser extensions can read <code>localStorage</code>, inject scripts, and intercept network requests within the page. Only install extensions you trust from sources you trust.</div>
+            </div>
+          </div>
+
+          <div class="threat-item warn">
+            <span class="threat-prefix" aria-hidden="true">&#9888;</span>
+            <div class="threat-content">
+              <div class="threat-title">Stolen or unlocked devices</div>
+              <div class="threat-desc">Anyone with physical access to your unlocked device and browser can read your conversations and API key from <code>localStorage</code>. Lock your device and browser profile.</div>
+            </div>
+          </div>
+
+          <div class="threat-item warn">
+            <span class="threat-prefix" aria-hidden="true">&#9888;</span>
+            <div class="threat-content">
+              <div class="threat-title">Network interception</div>
+              <div class="threat-desc">While all API traffic is encrypted with HTTPS, sophisticated attackers on compromised networks (e.g. rogue captive portals with forged certificates) may pose risks depending on your device&rsquo;s certificate trust store.</div>
+            </div>
+          </div>
+
+          <div class="threat-item warn">
+            <span class="threat-prefix" aria-hidden="true">&#9888;</span>
+            <div class="threat-content">
+              <div class="threat-title">Google API vulnerabilities</div>
+              <div class="threat-desc">Proxen relies entirely on Google&rsquo;s API security. Any vulnerabilities in <code>generativelanguage.googleapis.com</code> are outside Proxen&rsquo;s control. Review <a href="https://safety.google" target="_blank" rel="noopener noreferrer">Google&rsquo;s security practices</a> independently.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 05 Honest Assessment -->
+      <section class="section" aria-labelledby="sec-honest">
+        <h2 class="section-heading" id="sec-honest">
+          <span class="h-num">05</span>
+          Honest Assessment
+        </h2>
+        <div class="assessment-card">
+          <p>
+            Proxen&rsquo;s serverless design eliminates an entire class of server-side vulnerabilities &mdash; breaches,
+            leaks, and insider threats that affect traditional web applications simply do not apply here.
+            That is a genuine, structural security advantage, not a marketing claim.
+          </p>
+          <p>
+            However, no application can protect against threats that originate on the device running it.
+            The <strong>weakest links in the Proxen security chain</strong> are:
+          </p>
+          <ul class="weak-link-list">
+            <li>Your device&rsquo;s physical and OS-level security</li>
+            <li>Your browser&rsquo;s integrity and installed extension ecosystem</li>
+            <li>The security of Google&rsquo;s Generative Language API</li>
+          </ul>
+          <div class="callout-box">
+            <span class="callout-icon">&#9873;</span>
+            <span>Proxen cannot protect against these threats. Maintaining a secure device, a clean browser
+            profile, and awareness of Google&rsquo;s API terms of service are your responsibility as the user.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 Verification -->
+      <section class="section" aria-labelledby="sec-verify">
+        <h2 class="section-heading" id="sec-verify">
+          <span class="h-num">06</span>
+          Verification
+        </h2>
+        <p class="prose" style="margin-bottom:20px;">
+          You should not take these claims on faith. Everything described on this page is independently
+          verifiable with tools built into your browser.
+        </p>
+        <div class="verify-list">
+
+          <div class="verify-item">
+            <div class="verify-num">1</div>
+            <div class="verify-body">
+              <strong>Inspect network traffic</strong>
+              <p>Open <code>DevTools</code> &rarr; <code>Network</code> tab. Send a message in Proxen. Confirm that all API requests are directed exclusively to <code>generativelanguage.googleapis.com</code>. No requests to any Proxen domain should appear.</p>
+            </div>
+          </div>
+
+          <div class="verify-item">
+            <div class="verify-num">2</div>
+            <div class="verify-body">
+              <strong>Read the source code</strong>
+              <p>The complete, unminified source is available at <a href="https://github.com/xensenx/Proxen" target="_blank" rel="noopener noreferrer">github.com/xensenx/Proxen</a>. Audit it yourself, or have someone you trust audit it. Every network call is visible in plain JavaScript.</p>
+            </div>
+          </div>
+
+          <div class="verify-item">
+            <div class="verify-num">3</div>
+            <div class="verify-body">
+              <strong>Inspect local storage</strong>
+              <p>Open <code>DevTools</code> &rarr; <code>Application</code> &rarr; <code>Local Storage</code> &rarr; your site origin. You can see exactly what Proxen has stored on your device &mdash; your API key, theme preference, and conversation history &mdash; and nothing else.</p>
+            </div>
+          </div>
+
+          <div class="verify-item">
+            <div class="verify-num">4</div>
+            <div class="verify-body">
+              <strong>Verify no outbound connections at idle</strong>
+              <p>Load Proxen without sending a message. The <code>Network</code> tab should show only the initial page load assets (HTML, CSS, JS, Google Fonts). Proxen makes no background pings, heartbeats, or telemetry calls.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div><!-- /container -->
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">Proxen &copy; 2026 &middot; by xensenx</div>
+
+      <nav class="footer-center" aria-label="Legal navigation">
+        <a href="privacy.html">Privacy</a>
+        <span class="footer-sep" aria-hidden="true">&middot;</span>
+        <a href="security.html" class="active" aria-current="page">Security</a>
+        <span class="footer-sep" aria-hidden="true">&middot;</span>
+        <a href="https://github.com/xensenx/Proxen" target="_blank" rel="noopener noreferrer">Source Code</a>
+      </nav>
+
+      <div class="footer-right">
+        <a href="https://ko-fi.com/xensenx" target="_blank" rel="noopener noreferrer" aria-label="Support Proxen on Ko-fi">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.618-.845-.573-2.566.514-3.359 1.085-.794 2.485-.428 3.444.03.096.055.172.118.211.166.047-.048.133-.111.229-.166.949-.458 2.365-.824 3.444-.03 1.079.794 1.131 2.514.621 3.404z"/>
+          </svg>
+          Support on Ko-fi
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ── Theme Toggle Script ──────────────────────────────────────── -->
+  <script>
+    (function () {
+      var btn = document.getElementById('themeToggle');
+      if (!btn) return;
+
+      btn.addEventListener('click', function () {
+        var html = document.documentElement;
+        var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        try { localStorage.setItem('proxen_theme', next); } catch (e) {}
+      });
+    })();
+  </script>
+
+</body>
+</html>

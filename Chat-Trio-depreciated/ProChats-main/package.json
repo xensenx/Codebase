@@ -1,0 +1,21 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "**ProChat** is an interactive web platform designed to provide engaging and natural conversations with AI-powered anime characters. Users can chat with pre-configured characters that possess unique personalities and conversational styles, powered by state-of-the-art language models from Google and NVIDIA.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xensenx/ProChats.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/xensenx/ProChats/issues"
+  },
+  "homepage": "https://github.com/xensenx/ProChats#readme"
+}

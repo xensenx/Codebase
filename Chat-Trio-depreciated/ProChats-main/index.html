@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6c5ce7">
+    <meta name="description" content="Chat with AI-powered anime characters in an installable progressive web app.">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="assets/Frieren.png">
+    <title>ProChat - AI Character Conversations</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        
+        <!-- SCREEN: LANDING -->
+        <section id="screen-landing" class="screen active">
+            <div class="landing-container">
+                <div class="landing-logo">
+                    <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="3"/>
+                        <path d="M30 50 L45 35 L60 50 L45 65 Z" fill="currentColor"/>
+                        <circle cx="70" cy="50" r="8" fill="currentColor"/>
+                    </svg>
+                </div>
+                
+                <h1 class="landing-title">ProChat</h1>
+                <p class="landing-subtitle">AI-Powered Character Conversations</p>
+                
+                <div class="landing-content">
+                    <div class="info-section">
+                        <h3>What is ProChat?</h3>
+                        <p>An interactive platform to chat with AI-powered anime characters. Each character has unique personalities and conversational styles.</p>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>How it works</h3>
+                        <p>Choose your access method, select a character, and start chatting. Your conversations are stored locally and privately.</p>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>Why ProChat?</h3>
+                        <p>Experience natural, context-aware conversations with your favorite characters powered by advanced AI models.</p>
+                    </div>
+                    
+                    <details class="more-options">
+                        <summary>More Options</summary>
+                        <div class="more-content">
+                            <h4>Technical Details</h4>
+                            <p>ProChat uses state-of-the-art language models to power character interactions. You can use your own API key or admin access with pre-configured models.</p>
+                            <p>All conversations are stored locally in your browser. No data is sent to external servers except for AI generation.</p>
+                        </div>
+                    </details>
+                </div>
+                
+                <button class="btn-primary" onclick="app.goToScreen('access')">Initialize Setup</button>
+            </div>
+        </section>
+
+        <!-- SCREEN: ACCESS SELECTION -->
+        <section id="screen-access" class="screen">
+            <div class="access-container">
+                <h2 class="screen-title">Choose Access Method</h2>
+                
+                <div class="access-grid">
+                    <!-- User API Key -->
+                    <div class="access-card">
+                        <div class="access-icon">🔑</div>
+                        <h3>Use Your API Key</h3>
+                        <p>Enter your own Google API key for Gemma 3 27B IT model</p>
+                        
+                        <div class="access-form" id="user-key-form">
+                            <input type="password" id="user-api-key" placeholder="Enter API key..." />
+                            <p class="help-text">Get your free key at <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></p>
+                            <p class="error-text" id="user-key-error"></p>
+                            <button class="btn-primary" onclick="app.submitUserKey()">Continue</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin Access -->
+                    <div class="access-card">
+                        <div class="access-icon">🔐</div>
+                        <h3>Admin Access</h3>
+                        <p>Use admin password for pre-configured AI models</p>
+                        
+                        <div class="access-form" id="admin-form">
+                            <input type="password" id="admin-password" placeholder="Enter password..." />
+                            <p class="error-text" id="admin-error"></p>
+                            <button class="btn-primary" onclick="app.submitAdminPassword()">Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN: MODEL SELECTION (Admin Only) -->
+        <section id="screen-models" class="screen">
+            <div class="models-container">
+                <h2 class="screen-title">Select AI Model</h2>
+                <p class="screen-subtitle">Choose the model that fits your needs</p>
+                
+                <div class="models-grid">
+                    <div class="model-card" onclick="app.selectModel('fast')">
+                        <div class="model-icon">⚡</div>
+                        <h3>Fast</h3>
+                        <p>Quick responses for casual conversations</p>
+                        <div class="model-specs">
+                            <span>Speed: ●●●●●</span>
+                            <span>Quality: ●●●○○</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card recommended" onclick="app.selectModel('balanced')">
+                        <div class="model-badge">Recommended</div>
+                        <div class="model-icon">⭐</div>
+                        <h3>Balanced</h3>
+                        <p>Great quality with good speed</p>
+                        <div class="model-specs">
+                            <span>Speed: ●●●●○</span>
+                            <span>Quality: ●●●●○</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card" onclick="app.selectModel('smart')">
+                        <div class="model-icon">🧠</div>
+                        <h3>Smart</h3>
+                        <p>Strong reasoning capabilities</p>
+                        <div class="model-specs">
+                            <span>Speed: ●●●○○</span>
+                            <span>Quality: ●●●●●</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card" onclick="app.selectModel('pro')">
+                        <div class="model-icon">💎</div>
+                        <h3>Pro</h3>
+                        <p>Maximum intelligence</p>
+                        <div class="model-specs">
+                            <span>Speed: ●●○○○</span>
+                            <span>Quality: ●●●●●</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card" onclick="app.selectModel('gemma')">
+                        <div class="model-icon">🔷</div>
+                        <h3>Gemma</h3>
+                        <p>Google's efficient model</p>
+                        <div class="model-specs">
+                            <span>Speed: ●●●●○</span>
+                            <span>Quality: ●●●●○</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card" onclick="app.selectModel('experimental')">
+                        <div class="model-icon">🔬</div>
+                        <h3>Experimental</h3>
+                        <p>Advanced reasoning model</p>
+                        <div class="model-specs">
+                            <span>Speed: ●●●○○</span>
+                            <span>Quality: ●●●●●</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN: CHARACTER SELECTION -->
+        <section id="screen-characters" class="screen">
+            <div class="characters-container">
+                <div class="characters-header">
+                    <h2 class="screen-title">Select Character</h2>
+                    <button class="settings-btn" onclick="app.toggleSettings()" aria-label="Open settings menu">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Settings Menu (Hidden by default) -->
+                <div class="settings-menu" id="settings-menu" role="menu" aria-label="Settings menu">
+                    <button onclick="app.resetSystem()" aria-label="Reset system and clear all data">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M3 21v-5h5"/>
+                        </svg>
+                        Reset System
+                    </button>
+                    <button onclick="app.exportAllChats()" aria-label="Export all conversations">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                        </svg>
+                        Export All Chats
+                    </button>
+                    <button id="change-model-btn" onclick="app.changeModel()" style="display: none;" aria-label="Change AI model">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6"/>
+                        </svg>
+                        Change Model
+                    </button>
+                    <button id="theme-toggle-btn" onclick="app.toggleTheme()" aria-label="Toggle dark/light theme">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                        <span id="theme-toggle-text">Light Mode</span>
+                    </button>
+                </div>
+                
+                <div class="characters-grid">
+                    <div class="character-card" onclick="app.selectCharacter('frieren')" role="button" tabindex="0" aria-label="Select Frieren character">
+                        <img src="assets/Frieren.png" alt="Frieren" class="character-img" loading="lazy">
+                        <h3>Frieren</h3>
+                        <p class="character-role">Ancient Elf Mage</p>
+                        <p class="character-role">Anime : Frieren : Beyond journeys End</p>
+                        <p class="character-desc">A thousand-year-old mage learning about human connections</p>
+                    </div>
+                    
+                    <div class="character-card" onclick="app.selectCharacter('nao')" role="button" tabindex="0" aria-label="Select Nao Tomori character">
+                        <img src="assets/Nao-Tomori.png" alt="Nao Tomori" class="character-img" loading="lazy">
+                        <h3>Nao Tomori</h3>
+                        <p class="character-role">Student Council President</p>
+                        <p class="character-role">Anime : Charlotte</p>
+                        <p class="character-desc">An High-school intellect with a sharp tongue and kind heart</p>
+                    </div>
+                    
+                    <div class="character-card" onclick="app.selectCharacter('thorfinn')" role="button" tabindex="0" aria-label="Select Thorfinn character">
+                        <img src="assets/Thorfinn.png" alt="Thorfinn" class="character-img" loading="lazy">
+                        <h3>Thorfinn</h3>
+                        <p class="character-role">Pacifist Warrior</p>
+                        <p class="character-role">Anime : Vinland Saga</p>
+                        <p class="character-desc">Reformed Viking seeking redemption and peace</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN: CHAT -->
+        <section id="screen-chat" class="screen">
+            <div class="chat-layout">
+                <!-- Fixed Header -->
+                <div class="chat-header">
+                    <div class="chat-header-left">
+                        <img id="chat-avatar" src="" alt="" class="chat-avatar">
+                        <div class="chat-header-info">
+                            <h3 id="chat-character-name"></h3>
+                            <span class="chat-status">
+                                <span class="status-dot"></span>
+                                Online
+                            </span>
+                        </div>
+                    </div>
+                    <div class="chat-header-actions">
+                        <button class="icon-btn" onclick="app.goToCharacters()" title="Change character" aria-label="Change character">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </button>
+                        <button class="icon-btn" onclick="app.clearChat()" title="Clear conversation" aria-label="Clear conversation">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="chat-messages-container">
+                    <div id="chat-messages" class="chat-messages"></div>
+                </div>
+
+                <!-- Fixed Input Area -->
+                <div class="chat-input-container">
+                    <div class="typing-indicator" id="typing-indicator">
+                        <div class="typing-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <span class="typing-text">Typing...</span>
+                    </div>
+                    <div class="chat-input-wrapper">
+                        <textarea 
+                            id="chat-input" 
+                            placeholder="Type your message..." 
+                            rows="1"
+                            maxlength="2000"
+                        ></textarea>
+                        <button id="send-btn" class="send-btn" disabled aria-label="Send message">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 2L11 13"/>
+                                <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="spinner"></div>
+            <p id="loading-text">Initializing...</p>
+        </div>
+
+        <!-- Offline Indicator -->
+        <div class="offline-indicator" id="offline-indicator">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="1" y1="1" x2="23" y2="23"/>
+                <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/>
+                <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/>
+                <path d="M10.71 5.05A16 16 0 0 1 22.58 9"/>
+                <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                <line x1="12" y1="20" x2="12.01" y2="20"/>
+            </svg>
+            <span>You're offline</span>
+        </div>
+
+        <!-- Scroll to Bottom Button -->
+        <button class="scroll-to-bottom" id="scroll-to-bottom" aria-label="Scroll to bottom">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+        </button>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <span class="footer-text">ProChat • © 2026 • <a href="https://github.com/xensenx" target="_blank" class="footer-link">xensenx</a></span>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
