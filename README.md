@@ -1,4 +1,4 @@
-This repository contains various miscellaneous self-contained snippets of code and other files for countless everyday tasks. It also includes archived projects and repositories that are no longer actively maintained but are kept here for preservation, reference, or simply because I don't want to lose them. Among those, you may also find WebTools that still remain useful. Some of these tools are hosted inside the ./docs directory of this repository.
+This repository contains various miscellaneous self-contained snippets of code, Local Ai Benchmarks, referential notes and tests and other files for countless everyday tasks. It also includes archived projects and repositories that are no longer actively maintained but are kept here for preservation, reference, or simply because I don't want to lose them. Among those, you may also find WebTools that still remain useful. Some of these tools are hosted inside the ./docs directory of this repository.
 
 To me, this is just a way to back up my code, but it may prove to be a treasure trove for someone exploring...
 
