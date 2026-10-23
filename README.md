@@ -22,6 +22,7 @@ Have fun exploring ^_~
 <details>
 <summary>Click here to expand Structure!</summary>
 
+```text 
 Root
 |   .gitattributes
 |   README.md
