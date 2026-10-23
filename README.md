@@ -15,7 +15,7 @@ If you have any questions related to any files, you can contact me through the e
 Have fun exploring ^_~
 
 > [!NOTE]
-> Below is a Windows tree style structure to view the repository structure, i update this weekly, it may not be updated to show latest structure
+> The expandable section below contains a Windows-style directory tree of this repository. It's updated weekly, so it may not reflect the latest changes.
 
 
 
